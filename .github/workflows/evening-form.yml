@@ -73,22 +73,42 @@ jobs:
             }'
           sleep 2
 
-      - name: Send Evening Reflection - Question 4
+      - name: Send Evening Reflection - Question 4a
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          # Question 4: Meditation
+          # Question 4a: How many times meditated
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
             -d '{
               "chat_id": "'"${CHAT_ID}"'",
-              "text": "*4. Did you meditate today?*",
+              "text": "*4. How many times did you meditate today?*\n\n(Ideal: 2x per day 🧘)",
               "parse_mode": "Markdown",
               "reply_markup": {
                 "inline_keyboard": [
-                  [{"text": "✅ Yes", "callback_data": "meditate_yes"}, {"text": "❌ No", "callback_data": "meditate_no"}],
-                  [{"text": "10 min", "callback_data": "meditate_10"}, {"text": "20 min", "callback_data": "meditate_20"}, {"text": "30+ min", "callback_data": "meditate_30"}]
+                  [{"text": "❌ None", "callback_data": "meditate_0x"}, {"text": "1x", "callback_data": "meditate_1x"}, {"text": "✨ 2x", "callback_data": "meditate_2x"}, {"text": "3x+", "callback_data": "meditate_3x"}]
+                ]
+              }
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Question 4b
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Question 4b: Total meditation duration
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*4b. Total meditation time today?*",
+              "parse_mode": "Markdown",
+              "reply_markup": {
+                "inline_keyboard": [
+                  [{"text": "≤20 min", "callback_data": "duration_20"}, {"text": "≤40 min", "callback_data": "duration_40"}],
+                  [{"text": "≤1 hour", "callback_data": "duration_60"}, {"text": "1h+ 🔥", "callback_data": "duration_60plus"}]
                 ]
               }
             }'
