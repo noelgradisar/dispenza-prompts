@@ -10,40 +10,136 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Send Evening Reflection Form
+      - name: Send Evening Reflection - Question 1
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          DATE=$(TZ="Europe/Ljubljana" date +"%A, %B %d")
-          
-          MESSAGE=$(cat << 'EOF'
-          🌙 Evening Reflection
-          
-          Time to check in with yourself. Reply with your answers:
-          
-          1. How present were you with Melisa and Noel today? (1-10)
-          
-          2. Overall emotional state today? (1-10)
-          
-          3. How easily could you feel gratitude? (1-10)
-          
-          4. 3 things you're grateful for (can be for things that haven't happened yet!)
-          
-          5. Did you meditate today? (Yes/No + minutes)
-          
-          6. Which prompt hit hardest today? (optional)
-          
-          7. Any wins, insights, or breakthroughs?
-          
-          Remember: Even when gratitude feels forced, it rewires your brain.
-          
-          Reply below 👇
-          EOF
-          )
-          
+          # Question 1: Presence with family (with inline buttons)
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg chat_id "$CHAT_ID" --arg text "$MESSAGE" '{chat_id: $chat_id, text: $text}')"
-          
-          echo "Sent evening reflection form for ${DATE}"
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "🌙 *Evening Reflection*\n\n*1. How present were you with Melisa and Noel today?*",
+              "parse_mode": "Markdown",
+              "reply_markup": {
+                "inline_keyboard": [
+                  [{"text": "1", "callback_data": "presence_1"}, {"text": "2", "callback_data": "presence_2"}, {"text": "3", "callback_data": "presence_3"}, {"text": "4", "callback_data": "presence_4"}, {"text": "5", "callback_data": "presence_5"}],
+                  [{"text": "6", "callback_data": "presence_6"}, {"text": "7", "callback_data": "presence_7"}, {"text": "8", "callback_data": "presence_8"}, {"text": "9", "callback_data": "presence_9"}, {"text": "10", "callback_data": "presence_10"}]
+                ]
+              }
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Question 2
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Question 2: Emotional state
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*2. Overall emotional state today?*",
+              "parse_mode": "Markdown",
+              "reply_markup": {
+                "inline_keyboard": [
+                  [{"text": "1", "callback_data": "emotion_1"}, {"text": "2", "callback_data": "emotion_2"}, {"text": "3", "callback_data": "emotion_3"}, {"text": "4", "callback_data": "emotion_4"}, {"text": "5", "callback_data": "emotion_5"}],
+                  [{"text": "6", "callback_data": "emotion_6"}, {"text": "7", "callback_data": "emotion_7"}, {"text": "8", "callback_data": "emotion_8"}, {"text": "9", "callback_data": "emotion_9"}, {"text": "10", "callback_data": "emotion_10"}]
+                ]
+              }
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Question 3
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Question 3: Gratitude ease
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*3. How easily could you feel gratitude today?*",
+              "parse_mode": "Markdown",
+              "reply_markup": {
+                "inline_keyboard": [
+                  [{"text": "1 😓", "callback_data": "gratitude_1"}, {"text": "2", "callback_data": "gratitude_2"}, {"text": "3", "callback_data": "gratitude_3"}, {"text": "4", "callback_data": "gratitude_4"}, {"text": "5", "callback_data": "gratitude_5"}],
+                  [{"text": "6", "callback_data": "gratitude_6"}, {"text": "7", "callback_data": "gratitude_7"}, {"text": "8", "callback_data": "gratitude_8"}, {"text": "9", "callback_data": "gratitude_9"}, {"text": "10 ✨", "callback_data": "gratitude_10"}]
+                ]
+              }
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Question 4
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Question 4: Meditation
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*4. Did you meditate today?*",
+              "parse_mode": "Markdown",
+              "reply_markup": {
+                "inline_keyboard": [
+                  [{"text": "✅ Yes", "callback_data": "meditate_yes"}, {"text": "❌ No", "callback_data": "meditate_no"}],
+                  [{"text": "10 min", "callback_data": "meditate_10"}, {"text": "20 min", "callback_data": "meditate_20"}, {"text": "30+ min", "callback_data": "meditate_30"}]
+                ]
+              }
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Question 5
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Question 5: Text responses
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*5. Reply with your 3 gratitudes* 🙏\n\n(Can be for things that haven'"'"'t happened yet!)\n\nExample:\n- Grateful for my million euros\n- Grateful for Melisa'"'"'s smile\n- Grateful for the house in Naklo",
+              "parse_mode": "Markdown"
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Question 6
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Question 6: Which prompt hit hardest
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*6. Which prompt hit hardest today?*\n\n(optional - reply or skip)",
+              "parse_mode": "Markdown",
+              "reply_markup": {
+                "inline_keyboard": [
+                  [{"text": "💰 Wealth", "callback_data": "best_wealth"}, {"text": "💜 Family", "callback_data": "best_family"}, {"text": "🏡 Home", "callback_data": "best_home"}],
+                  [{"text": "💪 Health", "callback_data": "best_health"}, {"text": "☀️ Joy", "callback_data": "best_joy"}, {"text": "🙏 Gratitude", "callback_data": "best_gratitude"}]
+                ]
+              }
+            }'
+          sleep 2
+
+      - name: Send Evening Reflection - Final
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Final: Wins and insights
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "chat_id": "'"${CHAT_ID}"'",
+              "text": "*7. Any wins, insights, or breakthroughs today?*\n\nReply with whatever comes to mind.\n\n_Remember: Even when gratitude feels forced, it rewires your brain._ 🧠\n\nSleep well, Klemen. Tomorrow you create again. 💜",
+              "parse_mode": "Markdown"
+            }'
