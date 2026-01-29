@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧠 Consciousness Dashboard — Klemen</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(90deg, #a855f7, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    
+    .header p { color: #888; font-size: 1rem; }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #a855f7, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .stat-label {
+      color: #888;
+      font-size: 0.8rem;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .vision-board { margin-bottom: 30px; }
+    
+    .vision-title {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #f97316, #eab308, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .goals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+    
+    .goal-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    
+    .goal-card:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+    }
+    
+    .goal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    
+    .goal-emoji { font-size: 1.5rem; }
+    .goal-name { font-weight: 600; color: #fff; }
+    .goal-subtitle { font-size: 0.8rem; color: #a855f7; }
+    .goal-vision { font-size: 0.85rem; color: #aaa; font-style: italic; }
+    
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .chart-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    
+    .chart-card h3 {
+      margin-bottom: 16px;
+      color: #a855f7;
+      font-size: 1rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+    
+    .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+    
+    .insight-card {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.1));
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    
+    .insight-card h3 { color: #a855f7; margin-bottom: 8px; }
+    
+    .gratitude-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    
+    .gratitude-section h3 {
+      margin-bottom: 16px;
+      color: #a855f7;
+    }
+    
+    .gratitude-item {
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: rgba(139, 92, 246, 0.1);
+      border-left: 3px solid #a855f7;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+    }
+    
+    .gratitude-date { font-size: 0.75rem; color: #888; margin-bottom: 4px; }
+    
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.6rem; }
+      .stat-value { font-size: 1.6rem; }
+      .goals-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🧠 Consciousness Dashboard</h1>
+    <p>Your journey of becoming — Klemen Gradisar</p>
+  </div>
+
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="insight-card">
+    <h3>💡 Today's Insight</h3>
+    <p id="insightText">Every check-in is a vote for your future self. You're building the neurological hardware for a new reality.</p>
+  </div>
+
+  <div class="vision-board">
+    <h2 class="vision-title">🎯 Vision Board 2025/2026</h2>
+    <div class="goals-grid" id="goalsGrid"></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>📈 Emotional State</h3>
+      <canvas id="emotionalChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>🙏 Gratitude Ease</h3>
+      <canvas id="gratitudeChart"></canvas>
+    </div>
+  </div>
+
+  <div class="gratitude-section">
+    <h3>🙏 Recent Gratitudes</h3>
+    <div id="gratitudeList"></div>
+  </div>
+
+  <script>
+    const GITHUB_RAW = 'https://raw.githubusercontent.com/noelgradisar/dispenza-prompts/main';
+    
+    const goals = [
+      { emoji: '🏠', name: 'FAMILY', subtitle: 'Thriving Relationships', vision: 'Melisa feels like a queen, Noel has the best dad' },
+      { emoji: '💰', name: 'WEALTH', subtitle: 'Millionaire Status', vision: 'Financial independence, €10k+ passive/month' },
+      { emoji: '📈', name: 'BUSINESS', subtitle: 'Positive Cashflow', vision: 'Thriving business generating consistent profit' },
+      { emoji: '🏡', name: 'HOME', subtitle: 'House in Naklo', vision: 'Beautiful family home, funded and built' },
+      { emoji: '💪', name: 'HEALTH', subtitle: 'Vital & Strong', vision: 'Peak physical and mental health' },
+      { emoji: '☀️', name: 'JOY', subtitle: 'Daily State', vision: 'Joy as the default, not something to chase' },
+      { emoji: '💼', name: 'INCOME', subtitle: '€300k+ Per Year', vision: 'Multiple streams flowing abundantly' },
+      { emoji: '✈️', name: 'TRAVEL', subtitle: 'Business Class Living', vision: 'Exploring the world in style with family' }
+    ];
+
+    async function loadDashboard() {
+      renderGoals();
+      
+      try {
+        const response = await fetch(`${GITHUB_RAW}/data/tracking.json?t=${Date.now()}`);
+        if (response.ok) {
+          const data = await response.json();
+          renderStats(data);
+          renderCharts(data.days || []);
+          renderGratitudes(data.days || []);
+        } else {
+          renderEmptyStats();
+        }
+      } catch (e) {
+        console.log('No tracking data yet');
+        renderEmptyStats();
+      }
+    }
+
+    function renderEmptyStats() {
+      const grid = document.getElementById('statsGrid');
+      grid.innerHTML = `
+        <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Day Streak</div></div>
+        <div class="stat-card"><div class="stat-value">-</div><div class="stat-label">Avg Emotion</div></div>
+        <div class="stat-card"><div class="stat-value">-</div><div class="stat-label">Avg Gratitude</div></div>
+        <div class="stat-card"><div class="stat-value">0%</div><div class="stat-label">Meditation</div></div>
+        <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Days Tracked</div></div>
+      `;
+    }
+
+    function renderStats(data) {
+      const grid = document.getElementById('statsGrid');
+      const s = data.stats || {};
+      grid.innerHTML = `
+        <div class="stat-card"><div class="stat-value">${s.streak || 0}</div><div class="stat-label">Day Streak</div></div>
+        <div class="stat-card"><div class="stat-value">${s.avgEmotion || '-'}</div><div class="stat-label">Avg Emotion</div></div>
+        <div class="stat-card"><div class="stat-value">${s.avgGratitude || '-'}</div><div class="stat-label">Avg Gratitude</div></div>
+        <div class="stat-card"><div class="stat-value">${s.meditationRate || 0}%</div><div class="stat-label">Meditation</div></div>
+        <div class="stat-card"><div class="stat-value">${s.totalDays || 0}</div><div class="stat-label">Days Tracked</div></div>
+      `;
+    }
+
+    function renderGoals() {
+      const grid = document.getElementById('goalsGrid');
+      grid.innerHTML = goals.map(g => `
+        <div class="goal-card">
+          <div class="goal-header">
+            <span class="goal-emoji">${g.emoji}</span>
+            <div>
+              <div class="goal-name">${g.name}</div>
+              <div class="goal-subtitle">${g.subtitle}</div>
+            </div>
+          </div>
+          <div class="goal-vision">"${g.vision}"</div>
+        </div>
+      `).join('');
+    }
+
+    function renderCharts(days) {
+      if (!days.length) {
+        document.getElementById('emotionalChart').parentElement.innerHTML = `
+          <h3>📈 Emotional State</h3>
+          <div class="empty-state"><div class="icon">📊</div><p>Complete your first evening reflection to see progress</p></div>
+        `;
+        document.getElementById('gratitudeChart').parentElement.innerHTML = `
+          <h3>🙏 Gratitude Ease</h3>
+          <div class="empty-state"><div class="icon">🙏</div><p>Track your gratitude to see trends</p></div>
+        `;
+        return;
+      }
+
+      const labels = days.map(d => d.date.slice(5));
+      const emotions = days.map(d => d.emotion);
+      const gratitude = days.map(d => d.gratitude);
+
+      new Chart(document.getElementById('emotionalChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Emotional State',
+            data: emotions,
+            borderColor: '#a855f7',
+            backgroundColor: 'rgba(168,85,247,0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          scales: {
+            y: { min: 0, max: 10, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#888' } },
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      new Chart(document.getElementById('gratitudeChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Gratitude Ease',
+            data: gratitude,
+            borderColor: '#f97316',
+            backgroundColor: 'rgba(249,115,22,0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          scales: {
+            y: { min: 0, max: 10, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#888' } },
+            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    function renderGratitudes(days) {
+      const list = document.getElementById('gratitudeList');
+      const allGratitudes = [];
+      
+      days.forEach(d => {
+        if (d.gratitudes) {
+          d.gratitudes.forEach(g => allGratitudes.push({ date: d.date, text: g }));
+        }
+      });
+      
+      if (!allGratitudes.length) {
+        list.innerHTML = `<div class="empty-state"><div class="icon">🙏</div><p>Your gratitudes will appear here</p></div>`;
+        return;
+      }
+      
+      list.innerHTML = allGratitudes.slice(-10).reverse().map(g => `
+        <div class="gratitude-item">
+          <div class="gratitude-date">${g.date}</div>
+          <div>${g.text}</div>
+        </div>
+      `).join('');
+    }
+
+    loadDashboard();
+    setInterval(loadDashboard, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
