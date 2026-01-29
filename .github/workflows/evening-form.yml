@@ -1,0 +1,48 @@
+name: Dispenza Evening Reflection
+
+on:
+  schedule:
+    # Runs at 8:30pm Ljubljana time (7:30pm UTC in winter)
+    - cron: '30 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-form:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send Evening Reflection Form
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          DATE=$(TZ="Europe/Ljubljana" date +"%A, %B %d")
+          
+          MESSAGE="🌙 *Evening Reflection — ${DATE}*
+
+Time to check in with yourself. Reply to this message with your answers:
+
+*1. How present were you with Melisa and Noel today?* (1-10)
+
+*2. Overall emotional state today?* (1-10)
+
+*3. How easily could you feel gratitude?* (1-10)
+
+*4. 3 things you're grateful for* (can be for things that haven't happened yet!)
+
+*5. Did you meditate today?* (Yes/No + minutes)
+
+*6. Which prompt hit hardest today?* (optional)
+
+*7. Any wins, insights, or breakthroughs?*
+
+_Remember: Even when gratitude feels forced, it rewires your brain. 'Gratitude is the ultimate state of receivership.' — Dr. Joe Dispenza_
+
+Reply below 👇"
+
+          # Send to Telegram with markdown
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${MESSAGE}\", \"parse_mode\": \"Markdown\"}"
+          
+          echo "Sent evening reflection form"

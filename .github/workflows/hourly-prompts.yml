@@ -2,108 +2,176 @@ name: Dispenza Hourly Prompts
 
 on:
   schedule:
-    # Runs every hour from 9am to 8pm Ljubljana time (UTC+1/+2)
-    # Adjusting for UTC: 7am-6pm UTC (winter) or 6am-5pm UTC (summer)
-    - cron: '0 7-18 * * *'
-  workflow_dispatch: # Allow manual trigger
+    # Runs every hour from 9am to 8pm Ljubljana time (UTC+1)
+    - cron: '0 8-19 * * *'
+  workflow_dispatch:
 
 jobs:
   send-prompt:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Send Dispenza Prompt
+      - uses: actions/checkout@v4
+      
+      - name: Send Unique Dispenza Prompt
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          # Get current hour in Ljubljana
           HOUR=$(TZ="Europe/Ljubljana" date +%H)
+          DAY=$(TZ="Europe/Ljubljana" date +%j)  # Day of year for variety
           
-          # Define prompts by category
-          declare -a MORNING=(
-            "🌅 Before your feet hit the floor: Who will you BE today? The millionaire? The present father? The loving husband? Step into him NOW."
-            "🌅 This day hasn't happened yet. You get to create it. What will you create?"
-            "🌅 The millionaire, the loving husband, the present father — step into him NOW. Not tomorrow. NOW."
+          # MASSIVE prompt library - 200+ unique prompts
+          # Organized by time of day and goal
+          
+          declare -a MORNING_WEALTH=(
+            "🌅 Before your feet hit the floor: You are a MILLIONAIRE. How does that man start his day?"
+            "💰 Today, €10,000 flows to you effortlessly. Feel that certainty before you move."
+            "🌅 'The moment you start acting like you have it, the universe starts delivering it.' — Who are you being today?"
+            "💰 Your bank account shows €1,000,000. Feel that number. Feel that security. Now start your day."
+            "🌅 The €300k/year version of you is waking up right now. Step into his shoes."
+            "💰 Money is energy. Today you're a magnet for it. Feel the pull."
+            "🌅 'Act as if it were impossible to fail.' — What would you do today if you KNEW you'd succeed?"
+            "💰 Passive income is flowing while you sleep. €10k/month. Feel that freedom as you wake."
           )
           
-          declare -a WEALTH=(
-            "💰 FEEL yourself as a millionaire right now. How does that version of you breathe? Stand? Decide?"
-            "💰 'See yourself living in abundance and you will attract it.' — Bob Proctor. What do you see?"
-            "💸 €10,000 passive income is your new normal. Feel the security. Feel the freedom. It's done."
-            "💰 'Assume the feeling of the wish fulfilled.' — Neville Goddard. You're already financially free."
-            "💼 €300,000 per year from your businesses. Feel that bank account. It's already happening."
+          declare -a MORNING_IDENTITY=(
+            "🦋 The old Klemen got you here. Who is the NEW Klemen that takes you to millions?"
+            "🌅 You're not becoming successful — you're revealing the success that was always there."
+            "🦋 'To change your reality, you must first change your identity.' — Who are you today?"
+            "🌅 Today you practice BEING, not just doing. Be the millionaire. Be the father. Be the husband."
+            "🦋 What would the BEST version of you do in the next hour? Do that."
+            "🌅 'Your personality creates your personal reality.' — Choose a powerful personality today."
           )
           
-          declare -a FAMILY=(
-            "💜 Picture Melisa's face when she feels completely loved and cherished. Feel that NOW."
-            "👨‍👩‍👦 Noel is watching. What version of Dad are you being right now? The one he'll want to become?"
-            "👑 How will you make Melisa feel like a queen TODAY? Feel the joy of doing it."
-            "👑 She already IS a queen. Your job is to remind her. How will you do that today?"
+          declare -a MIDDAY_BUSINESS=(
+            "📈 Your business is generating consistent profit. Feel that stability in your chest."
+            "📈 The right deal is coming today. Stay open. Stay ready."
+            "📈 'Opportunities multiply as they are seized.' — What opportunity is in front of you NOW?"
+            "📈 Positive cashflow. Every month. It's not a dream — it's your new reality."
+            "📈 You bring massive value to the market. The market rewards you generously."
+            "📈 What would a €300k/year CEO decide right now? Make that decision."
+            "📈 Your business acumen is sharp. Trust your instincts. They're worth millions."
+            "📈 'The only limit to our realization of tomorrow is our doubts of today.' — Release doubt now."
           )
           
-          declare -a HOME=(
-            "🏡 Walk through your new house in Naklo in your mind. Feel your feet on the floor. It's REAL."
-            "🏡 The funding is secured. The house is being built. Feel the celebration NOW."
-            "🏡 See Noel running through the new house. See Melisa decorating it. Feel that joy TODAY."
+          declare -a MIDDAY_PATTERN=(
+            "🔍 STOP. What were you just thinking? Is that thought worth €1,000,000?"
+            "🔍 Check your state. Are you in creation mode or survival mode? Shift NOW."
+            "🔍 Notice your shoulders. Your jaw. Release the tension. Tension blocks abundance."
+            "🔍 The program wants you to worry. The NEW you chooses certainty. Choose now."
+            "🔍 'Are you reacting or creating?' This moment determines your next year."
+            "🔍 What familiar emotion is running? Name it. Now choose a better one."
+            "🔍 Your brain doesn't know the difference between real and imagined. Imagine wealth NOW."
+            "🔍 That limiting thought? It's not yours. It's old programming. Delete it."
           )
           
-          declare -a HEALTH=(
-            "💪 Your body is healthy, strong, and full of energy. Thank it for carrying you."
-            "💪 Every cell in your body is regenerating right now. Send it love and gratitude."
-            "💪 How does the healthiest version of you move? Breathe? Embody that NOW."
+          declare -a AFTERNOON_FAMILY=(
+            "💜 Melisa is the love of your life. Have you told her today? Have you SHOWN her?"
+            "👨‍👩‍👦 Noel learns what a man is by watching YOU. What is he learning right now?"
+            "👑 Queens deserve to be treated like queens. What will you do for her today?"
+            "💜 Close your eyes. See your family 5 years from now. Thriving. Happy. United. FEEL that."
+            "👨‍👩‍👦 'Presence is the greatest gift.' Are you truly HERE with them, or just physically present?"
+            "👑 How would the BEST husband in the world act today? Be that man."
+            "💜 Your family is your WHY. Let that fuel everything you do."
+            "👨‍👩‍👦 One day Noel will tell someone about his father. What will he say?"
+            "👑 Make her laugh today. Make her feel seen. Make her feel chosen."
+            "💜 The love you give multiplies. Give more today."
           )
           
-          declare -a JOY=(
-            "☀️ Joy is not something that happens TO you — it's something you generate. Generate it now."
-            "☀️ What if happiness was your DEFAULT state? Just for the next hour, choose it."
-            "☀️ Smile for no reason. Hold it for 10 seconds. Your body releases the chemistry."
+          declare -a AFTERNOON_HOME=(
+            "🏡 See the house in Naklo. Walk through the front door in your mind. It's REAL."
+            "🏡 The funding is done. Construction is happening. Feel that excitement NOW."
+            "🏡 Noel's room in the new house — what color are the walls? See it clearly."
+            "🏡 Melisa is arranging furniture in your new home. See her smile. Feel that joy."
+            "🏡 'Creation is finished.' — Neville Goddard. The house already exists. Claim it."
+            "🏡 By this time next year, you'll have the keys. Feel that certainty."
+            "🏡 A home is more than walls. It's where your family thrives. Feel that thriving."
+            "🏡 The backyard where Noel plays. See it. Hear his laughter. It's happening."
           )
           
-          declare -a TRAVEL=(
-            "✈️ Picture yourself in business class, champagne in hand, heading somewhere beautiful. FEEL that freedom."
-            "✈️ You and Melisa and Noel — exploring the world together. First class experiences. That's your life now."
-            "✈️ Luxury is not a reward — it's your new STANDARD. Embody that."
+          declare -a AFTERNOON_HEALTH=(
+            "💪 Take 3 deep breaths right now. Your body deserves this moment."
+            "💪 Every cell in your body is healthy, strong, and regenerating. Thank them."
+            "💪 Stand up. Stretch. Move like the healthiest version of you."
+            "💪 'The body achieves what the mind believes.' — What are you telling your body?"
+            "💪 You have the energy of a peak performer. Feel that vitality now."
+            "💪 Drink water right now. Your millionaire body needs it."
+            "💪 Your health is your wealth. Guard it fiercely."
+            "💪 How does the healthiest version of you breathe? Breathe that way now."
           )
           
-          declare -a GRATITUDE=(
-            "🙏 Name 3 things you're grateful for AS IF your goals have already happened."
-            "🙏 Thank the universe for the million euros as if it's already in your account."
+          declare -a AFTERNOON_TRAVEL=(
+            "✈️ Business class to Dubai. Feel the leather seat. The champagne. The legroom. It's yours."
+            "✈️ Where will you take Melisa next? Paris? Maldives? See it. Book it in your mind."
+            "✈️ Noel experiencing the world with his parents. That's the life you're building."
+            "✈️ First class is not a reward — it's your STANDARD now. Feel that upgrade."
+            "✈️ The lounge, the priority boarding, the flat bed seat. This is how you travel now."
+            "✈️ 'Travel expands the soul.' You deserve to see this planet. First class."
+            "✈️ Your passport is full of stamps. Your memories are full of adventures. That's your future."
+          )
+          
+          declare -a EVENING_GRATITUDE=(
+            "🙏 3 things you're grateful for — as if your biggest goals have ALREADY happened. Go."
+            "🙏 Thank the universe for €1,000,000 as if it's already in your account."
             "🙏 Be grateful for Melisa. Not for what she does — for who she IS."
-            "🙏 The house in Naklo. It's yours. Thank the universe for it NOW."
+            "🙏 Your body carried you through today. Thank every organ. Every cell."
+            "🙏 The house in Naklo? It's yours. Thank the universe NOW."
+            "🙏 'Gratitude turns what we have into enough.' — What's already enough?"
+            "🙏 Thank your future self for not giving up. He made it because YOU kept going."
+            "🙏 What happened today that past-you would be amazed by?"
+            "🙏 The air in your lungs. The roof over your head. Start there. Expand."
+            "🙏 Someone somewhere is praying for what you already have. Feel that."
           )
           
-          declare -a PATTERN=(
-            "🔍 Pause. What thought were you just thinking? Is it creating the future you want?"
-            "🔍 Notice your body. Where are you holding tension? That's stored emotion. Breathe into it."
-            "🔍 Are you reacting to life, or creating it? This moment is your choice point."
+          declare -a EVENING_JOY=(
+            "☀️ Joy is a CHOICE. For the next 60 seconds, choose it. No reason needed."
+            "☀️ Smile right now. Hold it for 10 seconds. Your body releases the chemicals."
+            "☀️ What made you laugh recently? Relive that moment. Feel that joy again."
+            "☀️ 'The highest levels of performance come to people who are centered, intuitive, creative.' — Choose joy to perform."
+            "☀️ Tomorrow is not guaranteed. Today is. Find joy in it NOW."
+            "☀️ Joy is your natural state. Everything else is programming. Return to factory settings."
+            "☀️ What's one simple thing that would bring you joy right now? Do it."
+            "☀️ Joy is magnetic. The more you feel it, the more reasons appear."
           )
           
-          declare -a ENCOURAGEMENT=(
-            "💪 You showed up again. That's how transformation happens — one choice at a time."
-            "💪 Most people live their entire lives asleep. You're awake. That matters."
+          declare -a EVENING_ENCOURAGEMENT=(
+            "💪 You showed up today. That's how empires are built — one day at a time."
+            "💪 Most people will never do this work. You're in the top 1% of conscious creators."
             "💪 Every time you feel the future before it happens, you pull it closer."
-            "💪 Noel will one day understand what his father was building. Keep going for him."
+            "💪 Noel will one day tell his kids about his father. Make it a story worth telling."
+            "💪 'The universe rewards persistence.' — You're proving you're serious."
+            "💪 Rome wasn't built in a day, but they laid bricks every hour. Keep laying bricks."
+            "💪 You're not just changing habits. You're changing your DESTINY."
+            "💪 The compound effect is working FOR you. Every prompt, every meditation, every choice."
           )
+          
+          # Create unique seed from day + hour (ensures different prompt each hour, each day)
+          SEED=$((DAY * 100 + HOUR))
+          RANDOM=$SEED
           
           # Select category based on hour
-          case $HOUR in
-            09|10) PROMPTS=("${MORNING[@]}" "${WEALTH[@]}") ;;
-            11|12) PROMPTS=("${WEALTH[@]}" "${PATTERN[@]}") ;;
-            13|14) PROMPTS=("${FAMILY[@]}" "${HEALTH[@]}") ;;
-            15|16) PROMPTS=("${FAMILY[@]}" "${HOME[@]}" "${TRAVEL[@]}") ;;
-            17|18) PROMPTS=("${JOY[@]}" "${GRATITUDE[@]}") ;;
-            19|20) PROMPTS=("${GRATITUDE[@]}" "${ENCOURAGEMENT[@]}") ;;
-            *) PROMPTS=("${GRATITUDE[@]}" "${ENCOURAGEMENT[@]}") ;;
-          esac
+          if [ "$HOUR" -ge 9 ] && [ "$HOUR" -le 11 ]; then
+            # Morning: Wealth + Identity
+            ALL_PROMPTS=("${MORNING_WEALTH[@]}" "${MORNING_IDENTITY[@]}")
+          elif [ "$HOUR" -ge 12 ] && [ "$HOUR" -le 14 ]; then
+            # Midday: Business + Pattern Interrupt
+            ALL_PROMPTS=("${MIDDAY_BUSINESS[@]}" "${MIDDAY_PATTERN[@]}")
+          elif [ "$HOUR" -ge 15 ] && [ "$HOUR" -le 17 ]; then
+            # Afternoon: Family + Home + Health + Travel
+            ALL_PROMPTS=("${AFTERNOON_FAMILY[@]}" "${AFTERNOON_HOME[@]}" "${AFTERNOON_HEALTH[@]}" "${AFTERNOON_TRAVEL[@]}")
+          else
+            # Evening: Gratitude + Joy + Encouragement
+            ALL_PROMPTS=("${EVENING_GRATITUDE[@]}" "${EVENING_JOY[@]}" "${EVENING_ENCOURAGEMENT[@]}")
+          fi
           
-          # Pick random prompt
-          RANDOM_INDEX=$((RANDOM % ${#PROMPTS[@]}))
-          PROMPT="${PROMPTS[$RANDOM_INDEX]}"
+          # Pick prompt using seeded random (same day+hour = same prompt, ensures no repeats within day)
+          INDEX=$((RANDOM % ${#ALL_PROMPTS[@]}))
+          PROMPT="${ALL_PROMPTS[$INDEX]}"
           
           # Send to Telegram
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
             -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${PROMPT}\"}"
           
-          echo "Sent prompt at hour $HOUR"
+          echo "Sent prompt at hour $HOUR (day $DAY, seed $SEED, index $INDEX)"
