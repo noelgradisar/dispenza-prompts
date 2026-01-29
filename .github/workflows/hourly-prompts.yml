@@ -1,0 +1,109 @@
+name: Dispenza Hourly Prompts
+
+on:
+  schedule:
+    # Runs every hour from 9am to 8pm Ljubljana time (UTC+1/+2)
+    # Adjusting for UTC: 7am-6pm UTC (winter) or 6am-5pm UTC (summer)
+    - cron: '0 7-18 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  send-prompt:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Send Dispenza Prompt
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          # Get current hour in Ljubljana
+          HOUR=$(TZ="Europe/Ljubljana" date +%H)
+          
+          # Define prompts by category
+          declare -a MORNING=(
+            "🌅 Before your feet hit the floor: Who will you BE today? The millionaire? The present father? The loving husband? Step into him NOW."
+            "🌅 This day hasn't happened yet. You get to create it. What will you create?"
+            "🌅 The millionaire, the loving husband, the present father — step into him NOW. Not tomorrow. NOW."
+          )
+          
+          declare -a WEALTH=(
+            "💰 FEEL yourself as a millionaire right now. How does that version of you breathe? Stand? Decide?"
+            "💰 'See yourself living in abundance and you will attract it.' — Bob Proctor. What do you see?"
+            "💸 €10,000 passive income is your new normal. Feel the security. Feel the freedom. It's done."
+            "💰 'Assume the feeling of the wish fulfilled.' — Neville Goddard. You're already financially free."
+            "💼 €300,000 per year from your businesses. Feel that bank account. It's already happening."
+          )
+          
+          declare -a FAMILY=(
+            "💜 Picture Melisa's face when she feels completely loved and cherished. Feel that NOW."
+            "👨‍👩‍👦 Noel is watching. What version of Dad are you being right now? The one he'll want to become?"
+            "👑 How will you make Melisa feel like a queen TODAY? Feel the joy of doing it."
+            "👑 She already IS a queen. Your job is to remind her. How will you do that today?"
+          )
+          
+          declare -a HOME=(
+            "🏡 Walk through your new house in Naklo in your mind. Feel your feet on the floor. It's REAL."
+            "🏡 The funding is secured. The house is being built. Feel the celebration NOW."
+            "🏡 See Noel running through the new house. See Melisa decorating it. Feel that joy TODAY."
+          )
+          
+          declare -a HEALTH=(
+            "💪 Your body is healthy, strong, and full of energy. Thank it for carrying you."
+            "💪 Every cell in your body is regenerating right now. Send it love and gratitude."
+            "💪 How does the healthiest version of you move? Breathe? Embody that NOW."
+          )
+          
+          declare -a JOY=(
+            "☀️ Joy is not something that happens TO you — it's something you generate. Generate it now."
+            "☀️ What if happiness was your DEFAULT state? Just for the next hour, choose it."
+            "☀️ Smile for no reason. Hold it for 10 seconds. Your body releases the chemistry."
+          )
+          
+          declare -a TRAVEL=(
+            "✈️ Picture yourself in business class, champagne in hand, heading somewhere beautiful. FEEL that freedom."
+            "✈️ You and Melisa and Noel — exploring the world together. First class experiences. That's your life now."
+            "✈️ Luxury is not a reward — it's your new STANDARD. Embody that."
+          )
+          
+          declare -a GRATITUDE=(
+            "🙏 Name 3 things you're grateful for AS IF your goals have already happened."
+            "🙏 Thank the universe for the million euros as if it's already in your account."
+            "🙏 Be grateful for Melisa. Not for what she does — for who she IS."
+            "🙏 The house in Naklo. It's yours. Thank the universe for it NOW."
+          )
+          
+          declare -a PATTERN=(
+            "🔍 Pause. What thought were you just thinking? Is it creating the future you want?"
+            "🔍 Notice your body. Where are you holding tension? That's stored emotion. Breathe into it."
+            "🔍 Are you reacting to life, or creating it? This moment is your choice point."
+          )
+          
+          declare -a ENCOURAGEMENT=(
+            "💪 You showed up again. That's how transformation happens — one choice at a time."
+            "💪 Most people live their entire lives asleep. You're awake. That matters."
+            "💪 Every time you feel the future before it happens, you pull it closer."
+            "💪 Noel will one day understand what his father was building. Keep going for him."
+          )
+          
+          # Select category based on hour
+          case $HOUR in
+            09|10) PROMPTS=("${MORNING[@]}" "${WEALTH[@]}") ;;
+            11|12) PROMPTS=("${WEALTH[@]}" "${PATTERN[@]}") ;;
+            13|14) PROMPTS=("${FAMILY[@]}" "${HEALTH[@]}") ;;
+            15|16) PROMPTS=("${FAMILY[@]}" "${HOME[@]}" "${TRAVEL[@]}") ;;
+            17|18) PROMPTS=("${JOY[@]}" "${GRATITUDE[@]}") ;;
+            19|20) PROMPTS=("${GRATITUDE[@]}" "${ENCOURAGEMENT[@]}") ;;
+            *) PROMPTS=("${GRATITUDE[@]}" "${ENCOURAGEMENT[@]}") ;;
+          esac
+          
+          # Pick random prompt
+          RANDOM_INDEX=$((RANDOM % ${#PROMPTS[@]}))
+          PROMPT="${PROMPTS[$RANDOM_INDEX]}"
+          
+          # Send to Telegram
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${PROMPT}\"}"
+          
+          echo "Sent prompt at hour $HOUR"
