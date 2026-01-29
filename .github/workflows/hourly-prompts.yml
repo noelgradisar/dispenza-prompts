@@ -2,7 +2,6 @@ name: Dispenza Hourly Prompts
 
 on:
   schedule:
-    # Runs every hour from 9am to 8pm Ljubljana time (UTC+1)
     - cron: '0 8-19 * * *'
   workflow_dispatch:
 
@@ -13,165 +12,182 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Send Unique Dispenza Prompt
+      - name: Send Manifestation Prompt
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           HOUR=$(TZ="Europe/Ljubljana" date +%H)
-          DAY=$(TZ="Europe/Ljubljana" date +%j)  # Day of year for variety
+          DAY=$(TZ="Europe/Ljubljana" date +%j)
           
-          # MASSIVE prompt library - 200+ unique prompts
-          # Organized by time of day and goal
+          # ============================================
+          # MORNING PROMPTS (9-11)
+          # Focus: Identity, Intention, State Setting
+          # ============================================
           
-          declare -a MORNING_WEALTH=(
-            "🌅 Before your feet hit the floor: You are a MILLIONAIRE. How does that man start his day?"
-            "💰 Today, €10,000 flows to you effortlessly. Feel that certainty before you move."
-            "🌅 'The moment you start acting like you have it, the universe starts delivering it.' — Who are you being today?"
-            "💰 Your bank account shows €1,000,000. Feel that number. Feel that security. Now start your day."
-            "🌅 The €300k/year version of you is waking up right now. Step into his shoes."
-            "💰 Money is energy. Today you're a magnet for it. Feel the pull."
-            "🌅 'Act as if it were impossible to fail.' — What would you do today if you KNEW you'd succeed?"
-            "💰 Passive income is flowing while you sleep. €10k/month. Feel that freedom as you wake."
+          declare -a MORNING=(
+            # DISPENZA - Create Your Day
+            "🌅 DISPENZA TECHNIQUE: Before moving, close your eyes. See your entire day unfolding perfectly. Feel the wins before they happen. Create your day."
+            "🧠 'Your personality creates your personal reality.' Who will you BE today — the millionaire, the devoted father, the loving husband? DECIDE now."
+            "🌅 Become no body, no one, no thing, no where, no time. In pure consciousness, plant the seed of your intention. Then rise."
+            
+            # NEVILLE - I AM
+            "✨ NEVILLE TECHNIQUE: What follows 'I AM' defines you. Say it now: I AM wealthy. I AM a loving father. I AM successful. I AM worthy. FEEL each one."
+            "✨ 'Assume the feeling of the wish fulfilled.' — Before your feet hit the floor, FEEL yourself as the millionaire you're becoming."
+            "✨ SATS REMINDER: Last night as you slept, did you fall asleep in the wish fulfilled? Tonight, do it again. The subconscious is always listening."
+            
+            # BOB PROCTOR - Paradigm
+            "💰 PROCTOR TECHNIQUE: Read your goal card. €1,000,000. €10k/month passive. House in Naklo. Read it with FEELING. This is your new paradigm."
+            "💰 'If you can hold it in your head, you can hold it in your hand.' — Hold your goals in your mind right now. Feel them materializing."
+            "💰 'Set a goal so big it excites you and scares you.' — Does your goal scare you? Good. That means it's big enough."
+            
+            # TONY ROBBINS - State
+            "🔥 ROBBINS TECHNIQUE: Move your body! 10 jumping jacks. Shake it out. Motion creates emotion. Start the day in a PEAK STATE."
+            "🔥 PRIMING: 3 minutes — think of 3 things you're grateful for. Really FEEL them. Now 3 minutes — see your goals accomplished. FEEL them."
+            "🔥 'Where focus goes, energy flows.' — What will you focus on today? Focus = destiny."
+            
+            # WAYNE DYER - Intention
+            "🙏 DYER TECHNIQUE: 'I AM' is the name of God. Whatever you attach to 'I AM' you become. Choose wisely this morning."
+            "🙏 Set your INTENTION for this day: I intend to feel abundant. I intend to be present. I intend to create value. What's your intention?"
+            
+            # ABRAHAM - Alignment
+            "🌟 ABRAHAM TECHNIQUE: Where are you on the emotional scale? Whatever you feel, reach for a SLIGHTLY better thought. Climb the ladder."
+            "🌟 SEGMENT INTENDING: Before this next hour, intend how you want to feel. Set the energy before you enter each segment of your day."
+            
+            # GREGG BRADEN - Heart
+            "💓 BRADEN TECHNIQUE: Place hand on heart. Breathe slowly. Feel gratitude in your heart — not your head. The heart is 5000x more powerful. Broadcast."
+            
+            # HILL - Burning Desire
+            "📚 HILL TECHNIQUE: Read your Definite Chief Aim. €1M net worth. €300k income. Feel the BURNING DESIRE. This is not a wish — it's a decision."
           )
           
-          declare -a MORNING_IDENTITY=(
-            "🦋 The old Klemen got you here. Who is the NEW Klemen that takes you to millions?"
-            "🌅 You're not becoming successful — you're revealing the success that was always there."
-            "🦋 'To change your reality, you must first change your identity.' — Who are you today?"
-            "🌅 Today you practice BEING, not just doing. Be the millionaire. Be the father. Be the husband."
-            "🦋 What would the BEST version of you do in the next hour? Do that."
-            "🌅 'Your personality creates your personal reality.' — Choose a powerful personality today."
+          # ============================================
+          # MIDDAY PROMPTS (12-14)
+          # Focus: Business, Wealth, Pattern Interrupts
+          # ============================================
+          
+          declare -a MIDDAY=(
+            # WEALTH CONSCIOUSNESS
+            "💰 Right now: FEEL €1,000,000 in your account. Not 'someday' — NOW. The universe doesn't know the difference. Generate the feeling."
+            "💰 'Money is attracted to those who think in terms of abundance.' — Are you thinking scarcity or abundance right now? SHIFT."
+            "💰 PROCTOR: 'Faith and fear both demand you believe in something you cannot see. You choose.' Choose faith in your millions."
+            "💰 €10,000 monthly passive income is DONE. It's decided. The how is not your job. The feeling IS. Feel it flowing."
+            "💰 'The only limitation is that which one sets up in one's own mind.' — NAPOLEON HILL. What limitation can you drop right now?"
+            
+            # BUSINESS
+            "📈 Your business is generating positive cashflow every month. FEEL that stability. FEEL that growth. It's happening."
+            "📈 'Opportunities multiply as they are seized.' — What opportunity is in front of you right now that you're hesitating on? SEIZE IT."
+            "📈 The right partners, clients, and deals are magnetized to you. You're in alignment. Stay open. Stay ready."
+            "📈 €300,000 per year from your businesses. Feel that number. Feel the freedom. Feel the proof of value delivered."
+            
+            # PATTERN INTERRUPTS
+            "🔍 STOP. What thought were you just thinking? Was it worthy of a millionaire? If not, choose again. RIGHT NOW."
+            "🔍 DISPENZA: 'Are you running the program, or is the program running you?' Catch yourself. The awareness is the freedom."
+            "🔍 Check your body. Where is there tension? That's stored emotion. Breathe into it. Release it. Tension blocks abundance."
+            "🔍 NEVILLE: 'To be conscious of being poor while praying for riches is to be rewarded with poverty.' What are you conscious of BEING?"
+            "🔍 ABRAHAM PIVOT: Notice a negative thought? Ask: 'What DO I want?' Pivot from the unwanted to the wanted."
+            "🔍 'Change your conception of yourself and you will automatically change the world in which you live.' — NEVILLE. Change it NOW."
+            
+            # TECHNIQUES
+            "🧠 MENTAL REHEARSAL: Close your eyes for 60 seconds. See yourself closing the deal. Feel the handshake. See the numbers. DONE."
+            "🧠 REVISION (Neville): Something didn't go well? Reimagine it as you wished it happened. Your subconscious doesn't know the difference."
+            "💓 HEART COHERENCE: Slow your breath. Focus on heart. Generate gratitude. For 2 minutes, broadcast abundance from your heart center."
           )
           
-          declare -a MIDDAY_BUSINESS=(
-            "📈 Your business is generating consistent profit. Feel that stability in your chest."
-            "📈 The right deal is coming today. Stay open. Stay ready."
-            "📈 'Opportunities multiply as they are seized.' — What opportunity is in front of you NOW?"
-            "📈 Positive cashflow. Every month. It's not a dream — it's your new reality."
-            "📈 You bring massive value to the market. The market rewards you generously."
-            "📈 What would a €300k/year CEO decide right now? Make that decision."
-            "📈 Your business acumen is sharp. Trust your instincts. They're worth millions."
-            "📈 'The only limit to our realization of tomorrow is our doubts of today.' — Release doubt now."
+          # ============================================
+          # AFTERNOON PROMPTS (15-17)
+          # Focus: Family, Home, Health, Travel
+          # ============================================
+          
+          declare -a AFTERNOON=(
+            # FAMILY
+            "💜 Melisa is your queen. How will you make her FEEL cherished today? Not what you'll DO — how you'll make her FEEL."
+            "👨‍👩‍👦 Noel is watching. He's learning what a man is by watching you. What is he seeing right now? Be that man."
+            "💜 NEVILLE: 'Everyone is you pushed out.' Your family reflects your inner state. What inner state do you want to see reflected?"
+            "👑 Close your eyes. See Melisa smiling because she feels completely loved. Feel YOUR joy at making her feel that way."
+            "💜 Presence is the gift. For the next hour, be FULLY HERE. Not thinking about business. HERE. With them."
+            "👨‍👩‍👦 One day Noel will tell his children about his father. What story do you want him to tell? Live that story TODAY."
+            
+            # HOME IN NAKLO
+            "🏡 NEVILLE TECHNIQUE: Walk through your new house in Naklo. Feel the floor beneath your feet. See the light through the windows. It's REAL."
+            "🏡 'Creation is finished. You are only selecting from what already exists.' — Your house exists. Select it. Feel it. It's done."
+            "🏡 See Noel running through the backyard. See Melisa in the kitchen of YOUR home. Feel that warmth. That's your reality."
+            "🏡 The funding is secured. The house is being built. You're holding the keys. FEEL that moment NOW."
+            "🏡 BRADEN: 'Feel as if the prayer is already answered.' The house is already yours. Thank the universe for your home in Naklo."
+            
+            # HEALTH
+            "💪 DISPENZA: Your body is made of trillions of cells. Right now, send a signal of health and vitality to every single one."
+            "💪 Take 5 deep breaths. With each exhale, release any tension. Your body is healthy, strong, and regenerating constantly."
+            "💪 'The body achieves what the mind believes.' What is your mind telling your body? Tell it HEALTH. Tell it STRENGTH."
+            "💪 Hand on heart. Thank your body for carrying you. Thank every organ. It's always working FOR you."
+            "💪 How does the healthiest version of you move? Stand up. Stretch. Breathe. Embody VITALITY."
+            
+            # TRAVEL
+            "✈️ VISUALIZE: You're in business class. Champagne in hand. Flying to somewhere beautiful with Melisa and Noel. FEEL that freedom."
+            "✈️ Luxury is not a reward — it's your new STANDARD. Feel the truth of that statement in your body."
+            "✈️ 'The world is your playground when you're in alignment.' — Where will you take your family next? See it. Book it in your mind."
+            "✈️ First class experiences. Premium everything. Not because you earned it — because you ARE it. Embody that identity."
           )
           
-          declare -a MIDDAY_PATTERN=(
-            "🔍 STOP. What were you just thinking? Is that thought worth €1,000,000?"
-            "🔍 Check your state. Are you in creation mode or survival mode? Shift NOW."
-            "🔍 Notice your shoulders. Your jaw. Release the tension. Tension blocks abundance."
-            "🔍 The program wants you to worry. The NEW you chooses certainty. Choose now."
-            "🔍 'Are you reacting or creating?' This moment determines your next year."
-            "🔍 What familiar emotion is running? Name it. Now choose a better one."
-            "🔍 Your brain doesn't know the difference between real and imagined. Imagine wealth NOW."
-            "🔍 That limiting thought? It's not yours. It's old programming. Delete it."
+          # ============================================
+          # EVENING PROMPTS (18-20)
+          # Focus: Gratitude, Joy, Reflection, Preparation
+          # ============================================
+          
+          declare -a EVENING=(
+            # GRATITUDE
+            "🙏 RAMPAGE OF APPRECIATION (Abraham): Rapid fire — what are you grateful for? Go! 10 things in 60 seconds. Feel each one."
+            "🙏 BRADEN: 'Gratitude is the feeling that it's already done.' Thank the universe for your million. It's done. Thank you."
+            "🙏 3 gratitudes for things that HAVEN'T happened yet. Feel grateful for the house, the wealth, the success. Future gratitude creates."
+            "🙏 Thank Melisa for being who she IS. Thank Noel for choosing you as his father. Feel that gratitude deeply."
+            "🙏 'Abundance is not something we acquire. It is something we tune into.' — DYER. Are you tuned in? Tune in now through gratitude."
+            "🙏 DISPENZA: 'The emotion of gratitude is the ultimate state of receivership.' Open yourself to receive. Be grateful NOW."
+            
+            # JOY
+            "☀️ Joy is not something that happens TO you — it's something you generate FROM you. Generate it NOW. No reason needed."
+            "☀️ ABRAHAM: 'The standard of success is not things. It's the feeling.' Feel successful RIGHT NOW. That IS success."
+            "☀️ Smile for 30 seconds. Your body releases chemistry. It doesn't know if it's 'real' — it just responds. Hack your biology."
+            "☀️ What would you feel if all your goals were achieved? Feel THAT. Now. The feeling is the magnet."
+            "☀️ 'Be happy for no reason, like a child.' — DYER. Just for 60 seconds, feel pure joy. No reason. Just joy."
+            
+            # REFLECTION
+            "🌙 Today you planted seeds. Some you saw, some you didn't. Trust the process. The harvest is coming."
+            "🌙 'Every day, in every way, I am getting better and better.' — ÉMILE COUÉ. Affirm this before you rest."
+            "🌙 What did you create today? What state did you live in? Tomorrow, create more consciously."
+            "🌙 'The universe rewards persistence.' — PROCTOR. You showed up again. That's how empires are built."
+            
+            # NEVILLE - SATS PREP
+            "🌙 SATS TONIGHT: As you fall asleep, see a scene that implies your wish fulfilled. The handshake after closing the deal. The keys to the house. Melisa's face as you surprise her. Feel it as you drift off."
+            "🌙 'Feeling is the secret.' Tonight, fall asleep in the feeling of the wish fulfilled. Your subconscious works all night."
+            "🌙 NEVILLE: 'A change of feeling is a change of destiny.' What feeling will you sleep in tonight? Choose the highest one."
+            
+            # ENCOURAGEMENT
+            "💪 Most people will never do this work. They'll live unconscious lives. You chose differently. That MATTERS."
+            "💪 HILL: 'Strength and growth come only through continuous effort.' You're putting in the effort. The growth is inevitable."
+            "💪 Noel will one day understand what his father was building. Keep building. For him. For Melisa. For yourself."
+            "💪 The compound effect is working. Every prompt, every meditation, every conscious choice. It's all adding up."
           )
           
-          declare -a AFTERNOON_FAMILY=(
-            "💜 Melisa is the love of your life. Have you told her today? Have you SHOWN her?"
-            "👨‍👩‍👦 Noel learns what a man is by watching YOU. What is he learning right now?"
-            "👑 Queens deserve to be treated like queens. What will you do for her today?"
-            "💜 Close your eyes. See your family 5 years from now. Thriving. Happy. United. FEEL that."
-            "👨‍👩‍👦 'Presence is the greatest gift.' Are you truly HERE with them, or just physically present?"
-            "👑 How would the BEST husband in the world act today? Be that man."
-            "💜 Your family is your WHY. Let that fuel everything you do."
-            "👨‍👩‍👦 One day Noel will tell someone about his father. What will he say?"
-            "👑 Make her laugh today. Make her feel seen. Make her feel chosen."
-            "💜 The love you give multiplies. Give more today."
-          )
-          
-          declare -a AFTERNOON_HOME=(
-            "🏡 See the house in Naklo. Walk through the front door in your mind. It's REAL."
-            "🏡 The funding is done. Construction is happening. Feel that excitement NOW."
-            "🏡 Noel's room in the new house — what color are the walls? See it clearly."
-            "🏡 Melisa is arranging furniture in your new home. See her smile. Feel that joy."
-            "🏡 'Creation is finished.' — Neville Goddard. The house already exists. Claim it."
-            "🏡 By this time next year, you'll have the keys. Feel that certainty."
-            "🏡 A home is more than walls. It's where your family thrives. Feel that thriving."
-            "🏡 The backyard where Noel plays. See it. Hear his laughter. It's happening."
-          )
-          
-          declare -a AFTERNOON_HEALTH=(
-            "💪 Take 3 deep breaths right now. Your body deserves this moment."
-            "💪 Every cell in your body is healthy, strong, and regenerating. Thank them."
-            "💪 Stand up. Stretch. Move like the healthiest version of you."
-            "💪 'The body achieves what the mind believes.' — What are you telling your body?"
-            "💪 You have the energy of a peak performer. Feel that vitality now."
-            "💪 Drink water right now. Your millionaire body needs it."
-            "💪 Your health is your wealth. Guard it fiercely."
-            "💪 How does the healthiest version of you breathe? Breathe that way now."
-          )
-          
-          declare -a AFTERNOON_TRAVEL=(
-            "✈️ Business class to Dubai. Feel the leather seat. The champagne. The legroom. It's yours."
-            "✈️ Where will you take Melisa next? Paris? Maldives? See it. Book it in your mind."
-            "✈️ Noel experiencing the world with his parents. That's the life you're building."
-            "✈️ First class is not a reward — it's your STANDARD now. Feel that upgrade."
-            "✈️ The lounge, the priority boarding, the flat bed seat. This is how you travel now."
-            "✈️ 'Travel expands the soul.' You deserve to see this planet. First class."
-            "✈️ Your passport is full of stamps. Your memories are full of adventures. That's your future."
-          )
-          
-          declare -a EVENING_GRATITUDE=(
-            "🙏 3 things you're grateful for — as if your biggest goals have ALREADY happened. Go."
-            "🙏 Thank the universe for €1,000,000 as if it's already in your account."
-            "🙏 Be grateful for Melisa. Not for what she does — for who she IS."
-            "🙏 Your body carried you through today. Thank every organ. Every cell."
-            "🙏 The house in Naklo? It's yours. Thank the universe NOW."
-            "🙏 'Gratitude turns what we have into enough.' — What's already enough?"
-            "🙏 Thank your future self for not giving up. He made it because YOU kept going."
-            "🙏 What happened today that past-you would be amazed by?"
-            "🙏 The air in your lungs. The roof over your head. Start there. Expand."
-            "🙏 Someone somewhere is praying for what you already have. Feel that."
-          )
-          
-          declare -a EVENING_JOY=(
-            "☀️ Joy is a CHOICE. For the next 60 seconds, choose it. No reason needed."
-            "☀️ Smile right now. Hold it for 10 seconds. Your body releases the chemicals."
-            "☀️ What made you laugh recently? Relive that moment. Feel that joy again."
-            "☀️ 'The highest levels of performance come to people who are centered, intuitive, creative.' — Choose joy to perform."
-            "☀️ Tomorrow is not guaranteed. Today is. Find joy in it NOW."
-            "☀️ Joy is your natural state. Everything else is programming. Return to factory settings."
-            "☀️ What's one simple thing that would bring you joy right now? Do it."
-            "☀️ Joy is magnetic. The more you feel it, the more reasons appear."
-          )
-          
-          declare -a EVENING_ENCOURAGEMENT=(
-            "💪 You showed up today. That's how empires are built — one day at a time."
-            "💪 Most people will never do this work. You're in the top 1% of conscious creators."
-            "💪 Every time you feel the future before it happens, you pull it closer."
-            "💪 Noel will one day tell his kids about his father. Make it a story worth telling."
-            "💪 'The universe rewards persistence.' — You're proving you're serious."
-            "💪 Rome wasn't built in a day, but they laid bricks every hour. Keep laying bricks."
-            "💪 You're not just changing habits. You're changing your DESTINY."
-            "💪 The compound effect is working FOR you. Every prompt, every meditation, every choice."
-          )
-          
-          # Create unique seed from day + hour (ensures different prompt each hour, each day)
+          # Create unique seed
           SEED=$((DAY * 100 + HOUR))
           RANDOM=$SEED
           
-          # Select category based on hour
+          # Select based on hour
           if [ "$HOUR" -ge 9 ] && [ "$HOUR" -le 11 ]; then
-            # Morning: Wealth + Identity
-            ALL_PROMPTS=("${MORNING_WEALTH[@]}" "${MORNING_IDENTITY[@]}")
+            ALL_PROMPTS=("${MORNING[@]}")
           elif [ "$HOUR" -ge 12 ] && [ "$HOUR" -le 14 ]; then
-            # Midday: Business + Pattern Interrupt
-            ALL_PROMPTS=("${MIDDAY_BUSINESS[@]}" "${MIDDAY_PATTERN[@]}")
+            ALL_PROMPTS=("${MIDDAY[@]}")
           elif [ "$HOUR" -ge 15 ] && [ "$HOUR" -le 17 ]; then
-            # Afternoon: Family + Home + Health + Travel
-            ALL_PROMPTS=("${AFTERNOON_FAMILY[@]}" "${AFTERNOON_HOME[@]}" "${AFTERNOON_HEALTH[@]}" "${AFTERNOON_TRAVEL[@]}")
+            ALL_PROMPTS=("${AFTERNOON[@]}")
           else
-            # Evening: Gratitude + Joy + Encouragement
-            ALL_PROMPTS=("${EVENING_GRATITUDE[@]}" "${EVENING_JOY[@]}" "${EVENING_ENCOURAGEMENT[@]}")
+            ALL_PROMPTS=("${EVENING[@]}")
           fi
           
-          # Pick prompt using seeded random (same day+hour = same prompt, ensures no repeats within day)
           INDEX=$((RANDOM % ${#ALL_PROMPTS[@]}))
           PROMPT="${ALL_PROMPTS[$INDEX]}"
           
-          # Send to Telegram
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
             -d "{\"chat_id\": \"${CHAT_ID}\", \"text\": \"${PROMPT}\"}"
           
-          echo "Sent prompt at hour $HOUR (day $DAY, seed $SEED, index $INDEX)"
+          echo "Sent prompt at hour $HOUR"
