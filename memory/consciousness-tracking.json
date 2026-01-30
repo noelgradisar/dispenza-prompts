@@ -1,21 +1,22 @@
 {
   "stats": {
     "streak": 1,
-    "avgEmotion": "8.0",
-    "avgGratitude": "NaN",
-    "meditationRate": 0,
+    "avgEmotion": "5.0",
+    "avgGratitude": "5.0",
+    "meditationRate": 100,
     "totalDays": 1,
-    "lastEntry": "2026-01-30"
+    "lastEntry": "2026-01-30",
+    "avgPresence": "5.0"
   },
   "days": [
     {
       "date": "2026-01-30",
-      "presence": null,
-      "emotion": 8,
-      "gratitude": null,
+      "presence": 5,
+      "emotion": 5,
+      "gratitude": 5,
       "meditation": {
-        "times": null,
-        "duration": null
+        "times": "2x",
+        "duration": "60plus"
       },
       "gratitudes": [],
       "bestPrompt": null,
