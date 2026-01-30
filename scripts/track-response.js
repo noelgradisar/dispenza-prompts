@@ -4,6 +4,8 @@
  * Consciousness Tracking System
  * Handles evening reflection responses and updates tracking.json
  * Called by main agent when processing Telegram callback/text responses
+ * 
+ * SILENT MODE: Only tracks data, no immediate feedback (consolidated at end)
  */
 
 const fs = require('fs');
@@ -26,6 +28,7 @@ function initTracking() {
         streak: 0,
         avgEmotion: null,
         avgGratitude: null,
+        avgPresence: null,
         meditationRate: 0,
         totalDays: 0,
         lastEntry: null
@@ -38,7 +41,7 @@ function initTracking() {
 }
 
 // Track a response
-function trackResponse(date, field, value) {
+function trackResponse(date, field, value, silent = true) {
   const data = initTracking();
   const today = date || new Date().toISOString().split('T')[0];
   
@@ -85,9 +88,11 @@ function trackResponse(date, field, value) {
   if (completeDays.length > 0) {
     const emotions = completeDays.map(d => d.emotion).filter(e => e !== null);
     const gratitudes = completeDays.map(d => d.gratitude).filter(g => g !== null);
+    const presences = completeDays.map(d => d.presence).filter(p => p !== null);
     
-    data.stats.avgEmotion = (emotions.reduce((a, b) => a + b, 0) / emotions.length).toFixed(1);
-    data.stats.avgGratitude = (gratitudes.reduce((a, b) => a + b, 0) / gratitudes.length).toFixed(1);
+    data.stats.avgEmotion = emotions.length > 0 ? (emotions.reduce((a, b) => a + b, 0) / emotions.length).toFixed(1) : null;
+    data.stats.avgGratitude = gratitudes.length > 0 ? (gratitudes.reduce((a, b) => a + b, 0) / gratitudes.length).toFixed(1) : null;
+    data.stats.avgPresence = presences.length > 0 ? (presences.reduce((a, b) => a + b, 0) / presences.length).toFixed(1) : null;
     
     // Calculate meditation rate
     const meditated = completeDays.filter(d => d.meditation.times && d.meditation.times !== '0x').length;
@@ -100,9 +105,21 @@ function trackResponse(date, field, value) {
   
   // Save
   fs.writeFileSync(TRACKING_FILE, JSON.stringify(data, null, 2));
-  console.log(`✓ Tracked: ${field} = ${JSON.stringify(value)}`);
   
-  return data;
+  if (!silent) {
+    console.log(`✓ Tracked: ${field} = ${JSON.stringify(value)}`);
+    console.log('Current stats:', data.stats);
+  }
+  
+  return { data, dayEntry, isComplete: isEntryComplete(dayEntry) };
+}
+
+// Check if today's entry is complete
+function isEntryComplete(dayEntry) {
+  return dayEntry.presence !== null &&
+         dayEntry.emotion !== null &&
+         dayEntry.gratitude !== null &&
+         dayEntry.meditation.times !== null;
 }
 
 // Calculate current streak
@@ -130,6 +147,67 @@ function calculateStreak(days) {
   }
   
   return streak;
+}
+
+// Generate consolidated insight for completed entry
+function generateConsolidatedInsight(data, dayEntry) {
+  const { presence, emotion, gratitude, meditation } = dayEntry;
+  const { streak, avgEmotion, avgGratitude, avgPresence } = data.stats;
+  
+  let insight = `📊 **Today's Check-In Complete**\n\n`;
+  
+  // Show scores
+  insight += `**Your Scores:**\n`;
+  insight += `💜 Presence: ${presence}/10\n`;
+  insight += `😊 Emotion: ${emotion}/10\n`;
+  insight += `🙏 Gratitude: ${gratitude}/10\n`;
+  insight += `🧘 Meditation: ${meditation.times}\n\n`;
+  
+  // Streak
+  if (streak > 0) {
+    insight += `🔥 **${streak}-day streak!** `;
+    if (streak >= 7) insight += `This is serious momentum.\n\n`;
+    else if (streak >= 3) insight += `Keep it going!\n\n`;
+    else insight += `Build on this.\n\n`;
+  } else {
+    insight += `**Start your streak tomorrow!**\n\n`;
+  }
+  
+  // Overall assessment
+  const avgToday = ((presence + emotion + gratitude) / 3).toFixed(1);
+  
+  if (avgToday >= 8) {
+    insight += `🌟 **Elevated state!** You're in the field where manifestation happens. This is the zone.\n\n`;
+  } else if (avgToday >= 6) {
+    insight += `💪 **Solid baseline.** You're showing up. A few more elevated practices and you'll be in the manifestation zone.\n\n`;
+  } else {
+    insight += `🌱 **Work to do.** Your scores show where energy needs to go: `;
+    
+    const low = [];
+    if (presence < 6) low.push('presence');
+    if (emotion < 6) low.push('emotion');
+    if (gratitude < 6) low.push('gratitude');
+    
+    insight += low.join(', ') + `. Focus there tomorrow.\n\n`;
+  }
+  
+  // Specific feedback
+  if (emotion < 6) {
+    insight += `**Emotion boost:** Music + movement + visualization. Tony Robbins: "Motion creates emotion."\n`;
+  }
+  if (gratitude < 6) {
+    insight += `**Gratitude practice:** Feel it for things that HAVEN'T happened yet. Your brain doesn't know the difference.\n`;
+  }
+  if (presence < 6) {
+    insight += `**Presence reminder:** When with Melisa & Noel, BE THERE. They feel when you're fully present.\n`;
+  }
+  if (meditation.times === '0x') {
+    insight += `**Meditation:** Tomorrow, do at least one. That's where the rewiring happens.\n`;
+  }
+  
+  insight += `\n💜 Keep going. You're building the neural pathways.`;
+  
+  return insight;
 }
 
 // Generate insight based on data
@@ -182,23 +260,46 @@ const command = process.argv[2];
 const date = process.argv[3];
 const field = process.argv[4];
 const value = process.argv[5];
+const silent = process.argv[6] === '--silent';
 
 if (command === 'track') {
   if (!field || !value) {
-    console.error('Usage: node track-response.js track [date] <field> <value>');
+    console.error('Usage: node track-response.js track [date] <field> <value> [--silent]');
     process.exit(1);
   }
-  const data = trackResponse(date, field, value);
-  console.log('Current stats:', data.stats);
+  const result = trackResponse(date, field, value, silent);
+  
+  if (!silent) {
+    console.log('Current stats:', result.data.stats);
+    
+    if (result.isComplete) {
+      console.log('\n' + generateConsolidatedInsight(result.data, result.dayEntry));
+    }
+  } else {
+    // Just print minimal confirmation
+    console.log(`✓ ${field}`);
+  }
 } else if (command === 'insight') {
   const data = initTracking();
   console.log(generateInsight(data));
+} else if (command === 'consolidated') {
+  const data = initTracking();
+  const today = new Date().toISOString().split('T')[0];
+  const dayEntry = data.days.find(d => d.date === today);
+  
+  if (!dayEntry) {
+    console.log('No entry for today yet.');
+  } else if (!isEntryComplete(dayEntry)) {
+    console.log('Today\'s entry is not complete yet.');
+  } else {
+    console.log(generateConsolidatedInsight(data, dayEntry));
+  }
 } else if (command === 'summary') {
   const data = initTracking();
   console.log(JSON.stringify(data, null, 2));
 } else {
-  console.error('Usage: node track-response.js [track|insight|summary]');
+  console.error('Usage: node track-response.js [track|insight|consolidated|summary]');
   process.exit(1);
 }
 
-module.exports = { trackResponse, generateInsight, initTracking };
+module.exports = { trackResponse, generateInsight, generateConsolidatedInsight, isEntryComplete, initTracking };
