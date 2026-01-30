@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '7965077098:AAH_YrZ4fNYdOsJ5YfX_KKGx_uT9s3vz1PQ';
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8142095199:AAGqE3GlP4xsWDpuGf_iesHyQTjzrzEmqX4';
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '1243017061';
 const WORKSPACE = '/Users/noelgradisar/.openclaw/workspace/dispenza-prompts';
 
