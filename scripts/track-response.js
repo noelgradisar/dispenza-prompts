@@ -111,6 +111,11 @@ function trackResponse(date, field, value, silent = true) {
     console.log('Current stats:', data.stats);
   }
   
+  
+  // Auto-sync to GitHub when entry is complete
+  if (isEntryComplete(dayEntry) && !silent) {
+    require("child_process").execSync("bash /Users/noelgradisar/.openclaw/workspace/dispenza-prompts/scripts/sync-tracking.sh", { stdio: "ignore" });
+  }
   return { data, dayEntry, isComplete: isEntryComplete(dayEntry) };
 }
 
