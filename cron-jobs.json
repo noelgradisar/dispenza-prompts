@@ -1,0 +1,60 @@
+{
+  "jobs": [
+    {
+      "name": "consciousness-hourly-prompts",
+      "description": "Send consciousness prompts every hour (9am-8pm Ljubljana time)",
+      "schedule": "0 9-20 * * *",
+      "timezone": "Europe/Ljubljana",
+      "command": "node /Users/noelgradisar/.openclaw/workspace/dispenza-prompts/scripts/send-prompt.js",
+      "type": "systemEvent"
+    },
+    {
+      "name": "consciousness-evening-form",
+      "description": "Send evening reflection form at 7:30pm Ljubljana time",
+      "schedule": "30 19 * * *",
+      "timezone": "Europe/Ljubljana",
+      "command": "node /Users/noelgradisar/.openclaw/workspace/dispenza-prompts/scripts/send-evening-form.js",
+      "type": "systemEvent"
+    },
+    {
+      "name": "consciousness-morning-voice",
+      "description": "Morning intention voice prompt (9:15am - strategic, cost-controlled)",
+      "schedule": "15 9 * * *",
+      "timezone": "Europe/Ljubljana",
+      "command": "node /Users/noelgradisar/.openclaw/workspace/dispenza-prompts/scripts/send-voice-moment.js morning_intention",
+      "type": "systemEvent",
+      "enabled": false,
+      "note": "Enable this for voice version of morning intention. Costs ~$0.30/month. Set ELEVEN_LABS_API_KEY env var."
+    },
+    {
+      "name": "consciousness-evening-sats-voice",
+      "description": "Evening SATS voice guide (9:45pm - after reflection)",
+      "schedule": "45 21 * * *",
+      "timezone": "Europe/Ljubljana",
+      "command": "node /Users/noelgradisar/.openclaw/workspace/dispenza-prompts/scripts/send-voice-moment.js evening_sats",
+      "type": "systemEvent",
+      "enabled": false,
+      "note": "Enable this for voice SATS guide. Costs ~$0.30/month. Falls back to text if no API key."
+    },
+    {
+      "name": "consciousness-weekly-summary",
+      "description": "Generate and send weekly progress summary (Sundays at 8pm)",
+      "schedule": "0 20 * * 0",
+      "timezone": "Europe/Ljubljana",
+      "command": "node /Users/noelgradisar/.openclaw/workspace/dispenza-prompts/scripts/generate-weekly-summary.js",
+      "type": "systemEvent"
+    }
+  ],
+  "setup_instructions": {
+    "openclaw_cron": "To install these cron jobs in OpenClaw, use the cron management interface or add them manually to your cron configuration.",
+    "environment_variables": {
+      "TELEGRAM_BOT_TOKEN": "Required - Your Telegram bot token",
+      "TELEGRAM_CHAT_ID": "Required - Your Telegram chat ID (1243017061)",
+      "ELEVEN_LABS_API_KEY": "Optional - For voice prompts (falls back to text without it)"
+    },
+    "cost_optimization": {
+      "voice_prompts": "Disabled by default. Enable only morning_intention for lowest cost (~$0.15/month). Enable both for max impact (~$0.30/month).",
+      "api_calls": "Text prompts cost nothing. Voice uses ~0.5¢ per generation."
+    }
+  }
+}

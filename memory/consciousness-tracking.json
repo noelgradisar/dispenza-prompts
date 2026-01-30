@@ -1,0 +1,25 @@
+{
+  "stats": {
+    "streak": 1,
+    "avgEmotion": "8.0",
+    "avgGratitude": "NaN",
+    "meditationRate": 0,
+    "totalDays": 1,
+    "lastEntry": "2026-01-30"
+  },
+  "days": [
+    {
+      "date": "2026-01-30",
+      "presence": null,
+      "emotion": 8,
+      "gratitude": null,
+      "meditation": {
+        "times": null,
+        "duration": null
+      },
+      "gratitudes": [],
+      "bestPrompt": null,
+      "insights": null
+    }
+  ]
+}
